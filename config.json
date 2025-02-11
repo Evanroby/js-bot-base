@@ -1,0 +1,5 @@
+{
+  "token": "YOUR_BOT_TOKEN",
+  "prefix": "!"
+}
+// Replace YOUR_BOT_TOKEN by your actual bot's token and delete this line.
