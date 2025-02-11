@@ -14,7 +14,7 @@ module.exports = {
             client.commands.get(commandName).execute(message, args);
         } catch (error) {
             console.error(error);
-            message.reply('Il y a eu une erreur en exécutant cette commande!');
+            message.reply('There was an error using this command, try again.');
         }
     }
 };
