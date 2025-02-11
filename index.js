@@ -1,21 +1,47 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
+const path = require('path');
 const config = require('./config.json');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions
+    ]
+});
 
-client.commands = new Map();
+client.commands = new Collection();
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-}
+the const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath, { withFileTypes: true });
 
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+commandFiles.forEach(dir => {
+    if (dir.isDirectory()) {
+        const files = fs.readdirSync(path.join(commandsPath, dir.name)).filter(file => file.endsWith('.js'));
+        for (const file of files) {
+            const command = require(`./commands/${dir.name}/${file}`);
+            client.commands.set(command.name, command);
+        }
+    }
+});
+
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
 for (const file of eventFiles) {
     const event = require(`./events/${file}`);
-    client.on(event.name, (...args) => event.execute(...args, client));
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args, client));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args, client));
+    }
 }
 
 client.login(config.token);
+
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+});
