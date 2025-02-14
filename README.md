@@ -44,13 +44,15 @@ npm start
 ## 📂 Project Structure
 ```plaintext
 /my-bot
-  ├── commands/          # Command files
-  │   ├── moderation/    # Ban, kick, etc.
-  │   ├── fun/          # Joke, meme, etc.
-  ├── events/           # Event handlers
-  ├── config.json       # Bot configuration
-  ├── index.js          # Main bot file
-  ├── package.json      # Dependencies & scripts
+  ├── commands/          
+  │   ├── moderation/    
+  │   ├── fun/          
+  ├── events/
+  │   ├── messageCreate/
+  │   ├── ready/              
+  ├── config.json       
+  ├── index.js          
+  ├── package.json      
 ```
 
 ---
